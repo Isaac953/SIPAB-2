@@ -1,62 +1,185 @@
 import React, { Component } from 'react';
-import { Alert, Button, TextInput, View, StyleSheet } from 'react-native';
+ 
+import { StyleSheet, TextInput, View, Alert, Button, Text} from 'react-native';
 
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-    
+// Importing Stack Navigator library to add multiple activities.
+import { createStackNavigator } from 'react-navigation';
+ 
+// Creating Login Activity.
+class LoginActivity extends Component {
+
+  // Setting up Login Activity title.
+  static navigationOptions =
+   {
+      title: 'LoginActivity',
+   };
+ 
+constructor(props) {
+ 
+    super(props)
+ 
     this.state = {
-      username: '',
-      password: '',
-    };
+ 
+      UserEmail: '',
+      UserPassword: ''
+ 
+    }
+ 
   }
-  
-  onLogin() {
-    const { username, password } = this.state;
+ 
+UserLoginFunction = () =>{
+ 
+ const { UserEmail }  = this.state ;
+ const { UserPassword }  = this.state ;
+ 
+ 
+//fetch('https://reactnativecode.000webhostapp.com/User_Login.php', {
+  fetch('http://192.168.0.108:8090/tesis/API/User_Login.php', {
+  method: 'POST',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+ 
+    email: UserEmail,
+ 
+    password: UserPassword
+ 
+  })
+ 
+}).then((response) => response.json())
+      .then((responseJson) => {
 
-    Alert.alert('Credentials', `${username} + ${password}`);
+        // If server response message same as Data Matched
+       if(responseJson === 'Data Matched')
+        {
+
+            //Then open Profile activity and send user email to profile activity.
+            this.props.navigation.navigate('Second', { Email: UserEmail });
+
+        }
+        else{
+
+          Alert.alert(responseJson);
+        }
+
+      }).catch((error) => {
+        console.error(error);
+      });
+ 
+ 
   }
-
+ 
   render() {
     return (
-      <View style={styles.container}>
+ 
+<View style={styles.MainContainer}>
+ 
+        <Text style= {styles.TextComponentStyle}>User Login Form</Text>
+  
         <TextInput
-          value={this.state.username}
-          onChangeText={(username) => this.setState({ username })}
-          placeholder={'Username'}
-          style={styles.input}
+          
+          // Adding hint in Text Input using Place holder.
+          placeholder="Enter User Email"
+ 
+          onChangeText={UserEmail => this.setState({UserEmail})}
+ 
+          // Making the Under line Transparent.
+          underlineColorAndroid='transparent'
+ 
+          style={styles.TextInputStyleClass}
         />
+ 
         <TextInput
-          value={this.state.password}
-          onChangeText={(password) => this.setState({ password })}
-          placeholder={'Password'}
+          
+          // Adding hint in Text Input using Place holder.
+          placeholder="Enter User Password"
+ 
+          onChangeText={UserPassword => this.setState({UserPassword})}
+ 
+          // Making the Under line Transparent.
+          underlineColorAndroid='transparent'
+ 
+          style={styles.TextInputStyleClass}
+ 
           secureTextEntry={true}
-          style={styles.input}
         />
-        
-        <Button
-          title={'Login'}
-          style={styles.input}
-          onPress={this.onLogin.bind(this)}
-        />
-      </View>
+ 
+        <Button title="Click Here To Login" onPress={this.UserLoginFunction} color="#2196F3" />
+      
+  
+ 
+</View>
+            
     );
   }
 }
 
+// Creating Profile activity.
+class ProfileActivity extends Component
+{
+
+  // Setting up profile activity title.
+   static navigationOptions =
+   {
+      title: 'ProfileActivity',
+    
+   };
+    
+
+   render()
+   {
+
+     const {goBack} = this.props.navigation;
+
+      return(
+         <View style = { styles.MainContainer }>
+ 
+            <Text style = {styles.TextComponentStyle}> { this.props.navigation.state.params.Email } </Text>
+
+            <Button title="Click here to Logout" onPress={ () => goBack(null) } />
+ 
+         </View>
+      );
+   }
+}
+
+export default MainProject = createStackNavigator(
+{
+   First: { screen: LoginActivity },
+   
+   Second: { screen: ProfileActivity }
+
+});
+ 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-  },
-  input: {
-    width: 200,
-    height: 44,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    marginBottom: 10,
-  },
+ 
+MainContainer :{
+ 
+justifyContent: 'center',
+flex:1,
+margin: 10,
+},
+ 
+TextInputStyleClass: {
+ 
+textAlign: 'center',
+marginBottom: 7,
+height: 40,
+borderWidth: 1,
+// Set border Hex Color Code Here.
+ borderColor: '#2196F3',
+ 
+ // Set border Radius.
+ borderRadius: 5 ,
+
+},
+
+ TextComponentStyle: {
+   fontSize: 20,
+  color: "#000",
+  textAlign: 'center', 
+  marginBottom: 15
+ }
 });
