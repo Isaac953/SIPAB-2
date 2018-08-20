@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
  
-import { StyleSheet, TextInput, View, Alert, Button, Text} from 'react-native';
+import { StyleSheet, TextInput, View, Alert, Button, Text, Image} from 'react-native';
 
 // Importing Stack Navigator library to add multiple activities.
 import { createStackNavigator } from 'react-navigation';
@@ -11,7 +11,7 @@ class LoginActivity extends Component {
   // Setting up Login Activity title.
   static navigationOptions =
    {
-      title: 'LoginActivity',
+      title: 'Inicio',
    };
  
 constructor(props) {
@@ -34,7 +34,8 @@ UserLoginFunction = () =>{
  
  
 //fetch('https://reactnativecode.000webhostapp.com/User_Login.php', {
-  fetch('http://192.168.0.108:8090/tesis/API/User_Login.php', {
+  //fetch('http://192.168.0.108:8090/tesis/API/User_Login.php', {
+    fetch('http://192.168.0.105:8090/tesis/API/User_Login.php', {
   method: 'POST',
   headers: {
     'Accept': 'application/json',
@@ -42,9 +43,9 @@ UserLoginFunction = () =>{
   },
   body: JSON.stringify({
  
-    email: UserEmail,
+    nombreusuario: UserEmail,
  
-    password: UserPassword
+    contrasegnaapk: UserPassword
  
   })
  
@@ -52,7 +53,7 @@ UserLoginFunction = () =>{
       .then((responseJson) => {
 
         // If server response message same as Data Matched
-       if(responseJson === 'Data Matched')
+       if(responseJson == 'Data Matched')
         {
 
             //Then open Profile activity and send user email to profile activity.
@@ -75,13 +76,22 @@ UserLoginFunction = () =>{
     return (
  
 <View style={styles.MainContainer}>
- 
-        <Text style= {styles.TextComponentStyle}>User Login Form</Text>
+             <View style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+        <Image 
+        style= { styles.imgStyle }
+        source = { require('./src/imgs/User.png')}
+        />
+        </View>
+
+        <Text style= {styles.TextComponentStyle}>Aplicación movil de Participantes y Beneficios (SIPAB-2)</Text>
   
         <TextInput
           
           // Adding hint in Text Input using Place holder.
-          placeholder="Enter User Email"
+          placeholder="Usuario"
  
           onChangeText={UserEmail => this.setState({UserEmail})}
  
@@ -94,7 +104,7 @@ UserLoginFunction = () =>{
         <TextInput
           
           // Adding hint in Text Input using Place holder.
-          placeholder="Enter User Password"
+          placeholder="Contraseña"
  
           onChangeText={UserPassword => this.setState({UserPassword})}
  
@@ -106,7 +116,7 @@ UserLoginFunction = () =>{
           secureTextEntry={true}
         />
  
-        <Button title="Click Here To Login" onPress={this.UserLoginFunction} color="#2196F3" />
+        <Button title="Entrar" onPress={this.UserLoginFunction} color="#2196F3" />
       
   
  
@@ -139,6 +149,37 @@ class ProfileActivity extends Component
             <Text style = {styles.TextComponentStyle}> { this.props.navigation.state.params.Email } </Text>
 
             <Button title="Click here to Logout" onPress={ () => goBack(null) } />
+
+            <Button title="Ver Reporte" onPress={ () => goBack(null) } />
+ 
+         </View>
+      );
+   }
+}
+
+// Creating Graficos por area de distinción.
+class GrafAreaDist extends Component
+{
+
+  // Setting up profile activity title.
+   static navigationOptions =
+   {
+      title: 'Reporte de Beneficiados por Área de distinción',
+    
+   };
+    
+
+   render()
+   {
+
+     const {goBack} = this.props.navigation;
+
+      return(
+         <View style = { styles.MainContainer }>
+ 
+            <Text style = {styles.TextComponentStyle}> { this.props.navigation.state.params.Email } </Text>
+
+            <Button title="Click here to Logout" onPress={ () => goBack(null) } />
  
          </View>
       );
@@ -149,7 +190,9 @@ export default MainProject = createStackNavigator(
 {
    First: { screen: LoginActivity },
    
-   Second: { screen: ProfileActivity }
+   Second: { screen: ProfileActivity },
+
+   Third: { screen: GrafAreaDist }
 
 });
  
